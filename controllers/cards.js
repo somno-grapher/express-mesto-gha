@@ -52,8 +52,56 @@ const deleteCard = (req, res) => {
     });
 };
 
+const likeCard = (req, res) => {
+  cardModel.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  )
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({
+          message: 'Card Not Found',
+        });
+      }
+      return res.send(card);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: 'Internal Server Error',
+        err,
+        stack: err.stack,
+      });
+    });
+};
+
+const unlikeCard = (req, res) => {
+  cardModel.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } },
+    { new: true },
+  )
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({
+          message: 'Card Not Found',
+        });
+      }
+      return res.send(card);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: 'Internal Server Error',
+        err,
+        stack: err.stack,
+      });
+    });
+};
+
 module.exports = {
   getCards,
   createCard,
   deleteCard,
+  likeCard,
+  unlikeCard,
 };
