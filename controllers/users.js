@@ -1,15 +1,14 @@
 const userModel = require('../models/user');
+const STATUS_CODES = require('../utils/consts');
 
 const getUsers = (req, res) => {
   userModel.find({})
     .then((users) => {
       res.send(users);
     })
-    .catch((err) => {
-      res.status(500).send({
-        message: 'Internal Server Error',
-        err,
-        stack: err.stack,
+    .catch(() => {
+      res.status(STATUS_CODES.DEFAULT).send({
+        message: 'На сервере произошла ошибка',
       });
     });
 };
@@ -18,17 +17,15 @@ const getUserById = (req, res) => {
   userModel.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return res.status(404).send({
-          message: 'User Not Found',
+        return res.status(STATUS_CODES.NOT_FOUND).send({
+          message: 'Пользователь не найден',
         });
       }
       return res.send(user);
     })
-    .catch((err) => {
-      res.status(500).send({
-        message: 'Internal Server Error',
-        err,
-        stack: err.stack,
+    .catch(() => {
+      res.status(STATUS_CODES.DEFAULT).send({
+        message: 'На сервере произошла ошибка',
       });
     });
 };
@@ -36,13 +33,17 @@ const getUserById = (req, res) => {
 const createUser = (req, res) => {
   userModel.create(req.body)
     .then((user) => {
-      res.status(201).send(user);
+      res.status(STATUS_CODES.CREATED).send(user);
     })
     .catch((err) => {
-      res.status(500).send({
-        message: 'Internal Server Error',
-        err,
-        stack: err.stack,
+      if (err.name === 'ValidationError') {
+        res.status(STATUS_CODES.BAD_REQUEST).send({
+          message: 'Переданы некорректные данные',
+        });
+        return;
+      }
+      res.status(STATUS_CODES.DEFAULT).send({
+        message: 'На сервере произошла ошибка',
       });
     });
 };
@@ -58,17 +59,21 @@ const updateProfile = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        return res.status(404).send({
-          message: 'User Not Found',
+        return res.status(STATUS_CODES.NOT_FOUND).send({
+          message: 'Пользователь не найден',
         });
       }
       return res.send(user);
     })
     .catch((err) => {
-      res.status(500).send({
-        message: 'Internal Server Error',
-        err,
-        stack: err.stack,
+      if (err.name === 'ValidationError') {
+        res.status(STATUS_CODES.BAD_REQUEST).send({
+          message: 'Переданы некорректные данные',
+        });
+        return;
+      }
+      res.status(STATUS_CODES.DEFAULT).send({
+        message: 'На сервере произошла ошибка',
       });
     });
 };
@@ -84,17 +89,21 @@ const updateAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        return res.status(404).send({
-          message: 'User Not Found',
+        return res.status(STATUS_CODES.NOT_FOUND).send({
+          message: 'Пользователь не найден',
         });
       }
       return res.send(user);
     })
     .catch((err) => {
-      res.status(500).send({
-        message: 'Internal Server Error',
-        err,
-        stack: err.stack,
+      if (err.name === 'ValidationError') {
+        res.status(STATUS_CODES.BAD_REQUEST).send({
+          message: 'Переданы некорректные данные',
+        });
+        return;
+      }
+      res.status(STATUS_CODES.DEFAULT).send({
+        message: 'На сервере произошла ошибка',
       });
     });
 };

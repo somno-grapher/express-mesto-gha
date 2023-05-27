@@ -1,15 +1,14 @@
 const cardModel = require('../models/card');
+const STATUS_CODES = require('../utils/consts');
 
 const getCards = (req, res) => {
   cardModel.find({})
     .then((cards) => {
       res.send(cards);
     })
-    .catch((err) => {
-      res.status(500).send({
-        message: 'Internal Server Error',
-        err,
-        stack: err.stack,
+    .catch(() => {
+      res.status(STATUS_CODES.DEFAULT).send({
+        message: 'На сервере произошла ошибка',
       });
     });
 };
@@ -20,13 +19,17 @@ const createCard = (req, res) => {
     ...req.body,
   })
     .then((card) => {
-      res.status(201).send(card);
+      res.status(STATUS_CODES.CREATED).send(card);
     })
     .catch((err) => {
-      res.status(500).send({
-        message: 'Internal Server Error',
-        err,
-        stack: err.stack,
+      if (err.name === 'ValidationError') {
+        res.status(STATUS_CODES.BAD_REQUEST).send({
+          message: 'Переданы некорректные данные',
+        });
+        return;
+      }
+      res.status(STATUS_CODES.DEFAULT).send({
+        message: 'На сервере произошла ошибка',
       });
     });
 };
@@ -35,19 +38,17 @@ const deleteCard = (req, res) => {
   cardModel.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({
-          message: 'Card Not Found',
+        return res.status(STATUS_CODES.NOT_FOUND).send({
+          message: 'Карточка не найдена',
         });
       }
       return res.send({
-        message: 'Card Deleted',
+        message: 'Карточка удалена',
       });
     })
-    .catch((err) => {
-      res.status(500).send({
-        message: 'Internal Server Error',
-        err,
-        stack: err.stack,
+    .catch(() => {
+      res.status(STATUS_CODES.DEFAULT).send({
+        message: 'На сервере произошла ошибка',
       });
     });
 };
@@ -60,17 +61,21 @@ const likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({
-          message: 'Card Not Found',
+        return res.status(STATUS_CODES.NOT_FOUND).send({
+          message: 'Карточка не найдена',
         });
       }
       return res.send(card);
     })
     .catch((err) => {
-      res.status(500).send({
-        message: 'Internal Server Error',
-        err,
-        stack: err.stack,
+      if (err.name === 'ValidationError') {
+        res.status(STATUS_CODES.BAD_REQUEST).send({
+          message: 'Переданы некорректные данные',
+        });
+        return;
+      }
+      res.status(STATUS_CODES.DEFAULT).send({
+        message: 'На сервере произошла ошибка',
       });
     });
 };
@@ -83,17 +88,21 @@ const unlikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({
-          message: 'Card Not Found',
+        return res.status(STATUS_CODES.NOT_FOUND).send({
+          message: 'Карточка не найдена',
         });
       }
       return res.send(card);
     })
     .catch((err) => {
-      res.status(500).send({
-        message: 'Internal Server Error',
-        err,
-        stack: err.stack,
+      if (err.name === 'ValidationError') {
+        res.status(STATUS_CODES.BAD_REQUEST).send({
+          message: 'Переданы некорректные данные',
+        });
+        return;
+      }
+      res.status(STATUS_CODES.DEFAULT).send({
+        message: 'На сервере произошла ошибка',
       });
     });
 };
