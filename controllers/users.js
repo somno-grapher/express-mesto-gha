@@ -17,7 +17,12 @@ const getUsers = (req, res) => {
 const getUserById = (req, res) => {
   userModel.findById(req.params.userId)
     .then((user) => {
-      res.send(user);
+      if (!user) {
+        return res.status(404).send({
+          message: 'User Not Found',
+        });
+      }
+      return res.send(user);
     })
     .catch((err) => {
       res.status(500).send({
