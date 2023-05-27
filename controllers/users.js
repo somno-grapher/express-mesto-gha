@@ -47,8 +47,35 @@ const createUser = (req, res) => {
     });
 };
 
+const updateProfile = (req, res) => {
+  userModel.findByIdAndUpdate(
+    req.user._id,
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    },
+  )
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({
+          message: 'User Not Found',
+        });
+      }
+      return res.send(user);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: 'Internal Server Error',
+        err,
+        stack: err.stack,
+      });
+    });
+};
+
 module.exports = {
   getUsers,
   getUserById,
   createUser,
+  updateProfile,
 };
