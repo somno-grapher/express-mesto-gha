@@ -38,7 +38,7 @@ const createUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(STATUS_CODES.BAD_REQUEST).send({
-          message: 'Переданы некорректные данные',
+          message: `Переданы некорректные данные. ${err.message}`,
         });
         return;
       }
@@ -68,7 +68,7 @@ const updateProfile = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(STATUS_CODES.BAD_REQUEST).send({
-          message: 'Переданы некорректные данные',
+          message: `Переданы некорректные данные. ${err.message}`,
         });
         return;
       }
@@ -98,7 +98,7 @@ const updateAvatar = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(STATUS_CODES.BAD_REQUEST).send({
-          message: 'Переданы некорректные данные',
+          message: `Переданы некорректные данные. ${err.message}`,
         });
         return;
       }
