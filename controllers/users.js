@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 
 const userModel = require('../models/user');
 const STATUS_CODES = require('../utils/consts');
+const { signToken } = require('../utils/jwtAuth');
 
 const SALT_ROUNDS = 10;
 
@@ -81,7 +82,42 @@ const createUser = (req, res) => {
 };
 
 const login = (req, res) => {
-  res.send({ message: 'login controller launched' });
+  // res.send({ message: 'login controller launched' });
+  const { email, password } = req.body;
+  userModel.findOne({ email }).select('+password')
+    .orFail(() => {
+      throw new Error('unauthorized error');
+    })
+    .then((user) => {
+      console.log(user);
+      return Promise.all([user, bcrypt.compare(password, user.password)]);
+    })
+    .then(([user, match]) => {
+      console.log('match: ', match);
+      if (!match) {
+        res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Почта или пароль неверны' });
+        return;
+      }
+      // console.log(user._id);
+      const token = signToken({ _id: user._id });
+      console.log(token);
+      res.send({ token });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(STATUS_CODES.BAD_REQUEST).send({
+          message: `Переданы некорректные данные. ${err.message}`,
+        });
+        return;
+      }
+      if (err.message === 'unauthorized error') {
+        res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Почта или пароль неверны' });
+        return;
+      }
+      res.status(STATUS_CODES.DEFAULT).send({
+        message: 'На сервере произошла ошибка',
+      });
+    });
 };
 
 const updateProfile = (req, res) => {
