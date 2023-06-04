@@ -3,16 +3,19 @@ const bcrypt = require('bcryptjs');
 const userModel = require('../models/user');
 const STATUS_CODES = require('../utils/consts');
 const { signToken } = require('../utils/jwtAuth');
+const ConflictError = require('../errors/ConflictError');
 
 const SALT_ROUNDS = 10;
 
 const getUsers = (req, res) => {
+  // !
+  // throw new Error('бум');
   userModel.find({})
     .then((users) => {
       res.send(users);
     })
     .catch(() => {
-      res.status(STATUS_CODES.DEFAULT).send({
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: 'На сервере произошла ошибка',
       });
     });
@@ -29,7 +32,7 @@ const getUserById = (req, res) => {
       return res.send(user);
     })
     .catch(() => {
-      res.status(STATUS_CODES.DEFAULT).send({
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: 'На сервере произошла ошибка',
       });
     });
@@ -46,13 +49,13 @@ const getCurrentUser = (req, res) => {
       return res.send(user);
     })
     .catch(() => {
-      res.status(STATUS_CODES.DEFAULT).send({
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: 'На сервере произошла ошибка',
       });
     });
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const {
     name,
     about,
@@ -86,12 +89,13 @@ const createUser = (req, res) => {
             return;
           }
           if (err.code === STATUS_CODES.MONGO_DUPLICATED_KEY) {
-            res.status(STATUS_CODES.CONFLICT).send({
-              message: 'Такой пользователь уже существует',
-            });
+            // res.status(STATUS_CODES.CONFLICT).send({
+            //   message: 'Такой пользователь уже существует',
+            // });
+            next(new ConflictError('Такой пользователь уже существует'));
             return;
           }
-          res.status(STATUS_CODES.DEFAULT).send({
+          res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
             message: 'На сервере произошла ошибка',
           });
         });
@@ -131,7 +135,7 @@ const login = (req, res) => {
         res.status(STATUS_CODES.UNAUTHORIZED).send({ message: 'Почта или пароль неверны' });
         return;
       }
-      res.status(STATUS_CODES.DEFAULT).send({
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: 'На сервере произошла ошибка',
       });
     });
@@ -161,7 +165,7 @@ const updateProfile = (req, res) => {
         });
         return;
       }
-      res.status(STATUS_CODES.DEFAULT).send({
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: 'На сервере произошла ошибка',
       });
     });
@@ -191,7 +195,7 @@ const updateAvatar = (req, res) => {
         });
         return;
       }
-      res.status(STATUS_CODES.DEFAULT).send({
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: 'На сервере произошла ошибка',
       });
     });

@@ -7,7 +7,7 @@ const getCards = (req, res) => {
       res.send(cards);
     })
     .catch(() => {
-      res.status(STATUS_CODES.DEFAULT).send({
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: 'На сервере произошла ошибка',
       });
     });
@@ -28,7 +28,7 @@ const createCard = (req, res) => {
         });
         return;
       }
-      res.status(STATUS_CODES.DEFAULT).send({
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: 'На сервере произошла ошибка',
       });
     });
@@ -52,7 +52,7 @@ const deleteCard = (req, res) => {
       });
     })
     .catch(() => {
-      res.status(STATUS_CODES.DEFAULT).send({
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: 'На сервере произошла ошибка',
       });
     });
@@ -79,7 +79,7 @@ const likeCard = (req, res) => {
         });
         return;
       }
-      res.status(STATUS_CODES.DEFAULT).send({
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: 'На сервере произошла ошибка',
       });
     });
@@ -106,7 +106,7 @@ const unlikeCard = (req, res) => {
         });
         return;
       }
-      res.status(STATUS_CODES.DEFAULT).send({
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: 'На сервере произошла ошибка',
       });
     });

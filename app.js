@@ -5,9 +5,6 @@ const { errors } = require('celebrate');
 
 const router = require('./routes');
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
-// mongoose.connect('mongodb://localhost:27017/mestodb');
-
 const app = express();
 
 app.use(express.json());
@@ -18,6 +15,27 @@ app.use(router);
 
 app.use(errors());
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+        ? 'Централизованная ошибка по умолчанию'
+        : message,
+    });
+  next();
 });
+
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
+  .then(() => {
+    console.log('База данных подключена');
+    app.listen(3000, () => {
+      console.log('Server is running on port 3000');
+    });
+  })
+  .catch((err) => {
+    console.log('Ошибка подключения к база данных', err);
+    app.exit(1);
+  });
+// mongoose.connect('mongodb://localhost:27017/mestodb');
