@@ -13,4 +13,11 @@ const validateUserBody = celebrate({
   }),
 });
 
-module.exports = { validateUserBody };
+const validateCardBody = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    link: Joi.string().uri(),
+  }),
+});
+
+module.exports = { validateUserBody, validateCardBody };
