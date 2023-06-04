@@ -55,10 +55,10 @@ const createUser = (req, res) => {
       })
         .then((user) => {
           res.status(STATUS_CODES.CREATED).send({
-            name,
-            about,
-            avatar,
-            email,
+            data: {
+              _id: user._id,
+              email: user.email,
+            },
           });
         })
         .catch((err) => {
