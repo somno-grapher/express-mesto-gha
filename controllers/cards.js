@@ -42,6 +42,11 @@ const deleteCard = (req, res) => {
           message: 'Карточка не найдена',
         });
       }
+      // if (card.owner !== req.user._id) {
+      //   return res.status(STATUS_CODES.UNAUTHORIZED).send({
+      //     message: 'Вы не можете удалять чужие карточки',
+      //   });
+      // }
       return res.send({
         message: 'Карточка удалена',
       });

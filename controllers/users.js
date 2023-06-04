@@ -35,6 +35,23 @@ const getUserById = (req, res) => {
     });
 };
 
+const getCurrentUser = (req, res) => {
+  userModel.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        return res.status(STATUS_CODES.NOT_FOUND).send({
+          message: 'Пользователь не найден',
+        });
+      }
+      return res.send(user);
+    })
+    .catch(() => {
+      res.status(STATUS_CODES.DEFAULT).send({
+        message: 'На сервере произошла ошибка',
+      });
+    });
+};
+
 const createUser = (req, res) => {
   const {
     name,
@@ -183,6 +200,7 @@ const updateAvatar = (req, res) => {
 module.exports = {
   getUsers,
   getUserById,
+  getCurrentUser,
   createUser,
   login,
   updateProfile,
