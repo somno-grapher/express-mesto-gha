@@ -35,28 +35,54 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  cardModel.findByIdAndRemove(req.params.cardId)
+  cardModel.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return res.status(STATUS_CODES.NOT_FOUND).send({
-          message: 'Карточка не найдена',
-        });
+        // return res.status(STATUS_CODES.NOT_FOUND).send({
+        //   message: 'Карточка не найдена',
+        // });
+        console.log('not found card');
+        throw new Error('Карточка не найдена');
       }
-      // if (card.owner !== req.user._id) {
-      //   return res.status(STATUS_CODES.UNAUTHORIZED).send({
-      //     message: 'Вы не можете удалять чужие карточки',
-      //   });
-      // }
-      return res.send({
-        message: 'Карточка удалена',
-      });
+      if (card.owner.toString() !== req.user._id.toString()) {
+        // return res.status(STATUS_CODES.UNAUTHORIZED).send({
+        //   message: 'Вы не можете удалять чужие карточки',
+        // });
+        console.log('alien card');
+        throw new Error('Вы не можете удалять чужие карточки');
+      }
+      return cardModel.findByIdAndDelete(req.params.cardId);
+    })
+    .then(() => {
+      console.log('card deleted');
+      res.send({ message: 'Карточка удалена' });
     })
     .catch(() => {
+      console.log('got into catch block');
       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
         message: 'На сервере произошла ошибка',
       });
     });
 };
+
+// const deleteCard = (req, res) => {
+//   cardModel.findByIdAndRemove(req.params.cardId)
+//     .then((card) => {
+//       if (!card) {
+//         return res.status(STATUS_CODES.NOT_FOUND).send({
+//           message: 'Карточка не найдена',
+//         });
+//       }
+//       return res.send({
+//         message: 'Карточка удалена',
+//       });
+//     })
+//     .catch(() => {
+//       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).send({
+//         message: 'На сервере произошла ошибка',
+//       });
+//     });
+// };
 
 const likeCard = (req, res) => {
   cardModel.findByIdAndUpdate(
