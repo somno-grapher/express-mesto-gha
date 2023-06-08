@@ -21,7 +21,7 @@ app.use((err, req, res, next) => {
     .status(statusCode)
     .send({
       message: statusCode === 500
-        ? 'Централизованная ошибка по умолчанию'
+        ? 'Внутренняя ошибка сервера'
         : message,
     });
   next();
@@ -38,4 +38,3 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
     console.log('Ошибка подключения к база данных', err);
     app.exit(1);
   });
-// mongoose.connect('mongodb://localhost:27017/mestodb');
