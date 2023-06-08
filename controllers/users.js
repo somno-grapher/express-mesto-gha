@@ -57,16 +57,13 @@ const createUser = (req, res, next) => {
 
   bcrypt.hash(password, SALT_ROUNDS)
 
-    .then((hash) => {
-      console.log('hash: ', hash);
-      return userModel.create({
-        name,
-        about,
-        avatar,
-        email,
-        password: hash,
-      });
-    })
+    .then((hash) => userModel.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    }))
 
     .then((user) => {
       res.status(STATUS_CODES.CREATED).send({
@@ -115,6 +112,7 @@ const login = (req, res, next) => {
         return;
       }
       if (err.message === 'unauthorized error') {
+        next(new UnauthorizedError('Почта или пароль неверны'));
         return;
       }
       next(err);
