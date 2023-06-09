@@ -140,8 +140,9 @@ const updateProfile = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError(`Переданы некорректные данные. ${err.message}`));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
