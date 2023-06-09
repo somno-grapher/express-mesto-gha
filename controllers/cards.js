@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const cardModel = require('../models/card');
 const STATUS_CODES = require('../utils/consts');
 const BadRequestError = require('../errors/BadRequestError');
@@ -70,7 +72,7 @@ const likeCard = (req, res, next) => {
     })
 
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.CastError) {
         next(new BadRequestError('Переданы некорректные данные'));
         return;
       }
@@ -93,7 +95,7 @@ const unlikeCard = (req, res, next) => {
     })
 
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.CastError) {
         next(new BadRequestError('Переданы некорректные данные'));
         return;
       }
