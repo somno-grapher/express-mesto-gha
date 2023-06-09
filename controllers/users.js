@@ -70,6 +70,9 @@ const createUser = (req, res, next) => {
         data: {
           _id: user._id,
           email: user.email,
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
         },
       });
     })
@@ -107,15 +110,6 @@ const login = (req, res, next) => {
     })
 
     .catch((err) => {
-      // if (err.name === 'ValidationError') {
-      //   next(new BadRequestError(`Переданы некорректные данные. ${err.message}`));
-      //   return;
-      // }
-      // if (err instanceof UnauthorizedError) {
-      //   // if (err.message === 'unauthorized error') {
-      //   next(err);
-      //   return;
-      // }
       next(err);
     });
 };
