@@ -93,7 +93,7 @@ const login = (req, res, next) => {
   userModel.findOne({ email }).select('+password')
 
     .orFail(() => {
-      throw new Error('unauthorized error');
+      throw new UnauthorizedError('Почта или пароль неверны');
     })
 
     .then((user) => Promise.all([user, bcrypt.compare(password, user.password)]))
@@ -107,14 +107,15 @@ const login = (req, res, next) => {
     })
 
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError(`Переданы некорректные данные. ${err.message}`));
-        return;
-      }
-      if (err.message === 'unauthorized error') {
-        next(new UnauthorizedError('Почта или пароль неверны'));
-        return;
-      }
+      // if (err.name === 'ValidationError') {
+      //   next(new BadRequestError(`Переданы некорректные данные. ${err.message}`));
+      //   return;
+      // }
+      // if (err instanceof UnauthorizedError) {
+      //   // if (err.message === 'unauthorized error') {
+      //   next(err);
+      //   return;
+      // }
       next(err);
     });
 };
