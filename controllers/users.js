@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const mongoose = require('mongoose');
 
 const userModel = require('../models/user');
 const STATUS_CODES = require('../utils/consts');
@@ -75,7 +76,7 @@ const createUser = (req, res, next) => {
     })
 
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError(`Переданы некорректные данные. ${err.message}`));
         return;
       }
@@ -129,7 +130,7 @@ const updateUserInfo = (id, updatedInfo, res, next) => {
     })
 
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError(`Переданы некорректные данные. ${err.message}`));
       } else {
         next(err);
