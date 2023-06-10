@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
 
+const { PORT, DB_URL } = require('./config');
 const router = require('./routes');
 const STATUS_CODES = require('./utils/consts');
 
@@ -28,11 +29,11 @@ app.use((err, req, res, next) => {
   next();
 });
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
+mongoose.connect(DB_URL)
   .then(() => {
     console.log('База данных подключена');
-    app.listen(3000, () => {
-      console.log('Сервер подключен к порту 3000');
+    app.listen(PORT, () => {
+      console.log(`Сервер подключен к порту ${PORT}`);
     });
   })
   .catch((err) => {
