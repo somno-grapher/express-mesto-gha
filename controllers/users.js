@@ -111,10 +111,10 @@ const login = (req, res, next) => {
     });
 };
 
-const updateUserInfo = (req, res, next) => {
+const updateUserInfo = (id, updatedInfo, res, next) => {
   userModel.findByIdAndUpdate(
-    req.user._id,
-    req.body,
+    id,
+    updatedInfo,
     {
       new: true,
       runValidators: true,
@@ -139,12 +139,22 @@ const updateUserInfo = (req, res, next) => {
 
 // updateUserInfo decorator
 const updateProfileDecorator = (updateProfile) => (req, res, next) => {
-  updateProfile(req, res, next);
+  updateProfile(
+    req.user._id,
+    { name: req.body.name, about: req.body.about },
+    res,
+    next,
+  );
 };
 
 // updateUserInfo decorator
 const updateAvatarDecorator = (updateAvatar) => (req, res, next) => {
-  updateAvatar(req, res, next);
+  updateAvatar(
+    req.user._id,
+    { avatar: req.body.avatar },
+    res,
+    next,
+  );
 };
 
 module.exports = {
