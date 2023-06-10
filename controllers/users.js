@@ -114,7 +114,7 @@ const login = (req, res, next) => {
     });
 };
 
-const updateProfile = (req, res, next) => {
+const updateUserInfo = (req, res, next) => {
   userModel.findByIdAndUpdate(
     req.user._id,
     req.body,
@@ -140,28 +140,14 @@ const updateProfile = (req, res, next) => {
     });
 };
 
-const updateAvatar = (req, res, next) => {
-  userModel.findByIdAndUpdate(
-    req.user._id,
-    req.body,
-    {
-      new: true,
-      runValidators: true,
-    },
-  )
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь не найден');
-      }
-      return res.send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError(`Переданы некорректные данные. ${err.message}`));
-        return;
-      }
-      next(err);
-    });
+// updateUserInfo decorator
+const updateProfileDecorator = (updateProfile) => (req, res, next) => {
+  updateProfile(req, res, next);
+};
+
+// updateUserInfo decorator
+const updateAvatarDecorator = (updateAvatar) => (req, res, next) => {
+  updateAvatar(req, res, next);
 };
 
 module.exports = {
@@ -170,6 +156,7 @@ module.exports = {
   getCurrentUser,
   createUser,
   login,
-  updateProfile,
-  updateAvatar,
+  updateProfileDecorator,
+  updateAvatarDecorator,
+  updateUserInfo,
 };
