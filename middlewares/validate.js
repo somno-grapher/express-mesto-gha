@@ -15,10 +15,15 @@ const validateUserBody = celebrate({
   }),
 });
 
-const validateUserBodyOnUpdate = celebrate({
+const validateUserBodyOnProfileUpdate = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
+  }),
+});
+
+const validateUserBodyOnAvatarUpdate = celebrate({
+  body: Joi.object().keys({
     avatar: Joi.string().custom(validateURL),
   }),
 });
@@ -44,7 +49,8 @@ const validateCardIdParam = celebrate({
 
 module.exports = {
   validateUserBody,
-  validateUserBodyOnUpdate,
+  validateUserBodyOnProfileUpdate,
+  validateUserBodyOnAvatarUpdate,
   validateUserIdParam,
   validateCardBody,
   validateCardIdParam,
