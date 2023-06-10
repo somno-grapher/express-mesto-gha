@@ -20,8 +20,8 @@ const getUsers = (req, res, next) => {
     });
 };
 
-const getUserById = (req, res, next) => {
-  userModel.findById(req.params.userId)
+const getUser = (id, res, next) => {
+  userModel.findById(id)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
@@ -33,17 +33,14 @@ const getUserById = (req, res, next) => {
     });
 };
 
-const getCurrentUser = (req, res, next) => {
-  userModel.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь не найден');
-      }
-      return res.send(user);
-    })
-    .catch((err) => {
-      next(err);
-    });
+// getUser decorator
+const getUserByIdDecorator = (getUserById) => (req, res, next) => {
+  getUserById(req.params.userId, res, next);
+};
+
+// getUser decorator
+const getCurrentUserDecorator = (getUserById) => (req, res, next) => {
+  getUserById(req.user._id, res, next);
 };
 
 const createUser = (req, res, next) => {
@@ -152,8 +149,9 @@ const updateAvatarDecorator = (updateAvatar) => (req, res, next) => {
 
 module.exports = {
   getUsers,
-  getUserById,
-  getCurrentUser,
+  getUser,
+  getUserByIdDecorator,
+  getCurrentUserDecorator,
   createUser,
   login,
   updateProfileDecorator,
