@@ -57,10 +57,15 @@ const deleteCard = (req, res, next) => {
     });
 };
 
-const likeCard = (req, res, next) => {
+const updateLike = (isToBeLiked, req, res, next) => {
+  const likeParameters = { likes: req.user._id };
+  const update = isToBeLiked
+    ? { $addToSet: likeParameters }
+    : { $pull: likeParameters };
+
   cardModel.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
+    update,
     { new: true },
   )
 
@@ -80,33 +85,21 @@ const likeCard = (req, res, next) => {
     });
 };
 
-const unlikeCard = (req, res, next) => {
-  cardModel.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true },
-  )
+// updateLike decorator
+const likeCardDecorator = (update) => (req, res, next) => {
+  update(true, req, res, next);
+};
 
-    .then((card) => {
-      if (!card) {
-        throw new NotFoundError('Карточка не найдена');
-      }
-      return res.send(card);
-    })
-
-    .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        next(new BadRequestError('Переданы некорректные данные'));
-        return;
-      }
-      next(err);
-    });
+// updateLike decorator
+const unlikeCardDecorator = (update) => (req, res, next) => {
+  update(false, req, res, next);
 };
 
 module.exports = {
   getCards,
   createCard,
   deleteCard,
-  likeCard,
-  unlikeCard,
+  updateLike,
+  likeCardDecorator,
+  unlikeCardDecorator,
 };
